@@ -1,1 +1,834 @@
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
 
+local Player = Players.LocalPlayer
+local Gui = script.Parent
+
+Gui.ResetOnSpawn = false
+Gui.IgnoreGuiInset = true
+
+--[[
+    HUB CLIENT
+    TYPE: LocalScript
+    LOCATION: StarterGui > HubGui > HubClient
+
+    CHANGE HUB TITLE HERE:
+]]
+
+local Title = "Whinz"
+
+--// SERVICES
+local UserInputService = game:GetService("UserInputService")
+
+local Gui = script.Parent
+
+Gui.ResetOnSpawn = false
+Gui.IgnoreGuiInset = true
+
+--==================================================
+-- THEME SYSTEM
+--==================================================
+
+local Themes = {
+
+	["Black and White"] = {
+		Main = Color3.fromRGB(15, 15, 15),
+		TopBar = Color3.fromRGB(20, 20, 20),
+		Sidebar = Color3.fromRGB(10, 10, 10),
+		Content = Color3.fromRGB(18, 18, 18),
+		Tab = Color3.fromRGB(10, 10, 10),
+		TabSelected = Color3.fromRGB(35, 35, 35),
+		Element = Color3.fromRGB(30, 30, 30),
+		Text = Color3.fromRGB(255, 255, 255),
+		SubText = Color3.fromRGB(190, 190, 190),
+		Accent = Color3.fromRGB(255, 255, 255),
+	},
+
+	["Black and Red"] = {
+		Main = Color3.fromRGB(10, 10, 10),
+		TopBar = Color3.fromRGB(15, 15, 15),
+		Sidebar = Color3.fromRGB(5, 5, 5),
+		Content = Color3.fromRGB(12, 12, 12),
+		Tab = Color3.fromRGB(5, 5, 5),
+		TabSelected = Color3.fromRGB(35, 0, 0),
+		Element = Color3.fromRGB(25, 25, 25),
+		Text = Color3.fromRGB(255, 50, 50),
+		SubText = Color3.fromRGB(220, 100, 100),
+		Accent = Color3.fromRGB(255, 0, 0),
+	},
+
+	["White and Black"] = {
+		Main = Color3.fromRGB(245, 245, 245),
+		TopBar = Color3.fromRGB(255, 255, 255),
+		Sidebar = Color3.fromRGB(235, 235, 235),
+		Content = Color3.fromRGB(250, 250, 250),
+		Tab = Color3.fromRGB(235, 235, 235),
+		TabSelected = Color3.fromRGB(210, 210, 210),
+		Element = Color3.fromRGB(225, 225, 225),
+		Text = Color3.fromRGB(0, 0, 0),
+		SubText = Color3.fromRGB(70, 70, 70),
+		Accent = Color3.fromRGB(0, 0, 0),
+	},
+	
+	["Pink and White"] = {
+		Main = Color3.fromRGB(255, 105, 180),
+		TopBar = Color3.fromRGB(255, 120, 190),
+		Sidebar = Color3.fromRGB(245, 85, 165),
+		Content = Color3.fromRGB(255, 115, 185),
+		Tab = Color3.fromRGB(245, 85, 165),
+		TabSelected = Color3.fromRGB(220, 60, 145),
+		Element = Color3.fromRGB(250, 95, 175),
+		Text = Color3.fromRGB(255, 255, 255),
+		SubText = Color3.fromRGB(245, 245, 245),
+		Accent = Color3.fromRGB(255, 255, 255),
+	},
+
+}
+
+local CurrentTheme = "Black and White"
+
+local ThemeObjects = {
+	Main = {},
+	TopBar = {},
+	Sidebar = {},
+	Content = {},
+	Tab = {},
+	TabSelected = {},
+	Element = {},
+	Text = {},
+	SubText = {},
+	Accent = {},
+}
+
+local function RegisterThemeObject(Type, Object, Property)
+
+	if not ThemeObjects[Type] then
+		return
+	end
+
+	table.insert(ThemeObjects[Type], {
+		Object = Object,
+		Property = Property
+	})
+
+end
+
+local function SetTheme(Name)
+
+	local Theme = Themes[Name]
+
+	if not Theme then
+		return
+	end
+
+	CurrentTheme = Name
+
+	for Type, Objects in pairs(ThemeObjects) do
+
+		local Color = Theme[Type]
+
+		if Color then
+
+			for _, Info in ipairs(Objects) do
+
+				if Info.Object and Info.Object.Parent then
+					Info.Object[Info.Property] = Color
+				end
+
+			end
+
+		end
+
+	end
+
+end
+
+--==================================================
+-- MAIN WINDOW
+--==================================================
+
+local Main = Instance.new("Frame")
+Main.Name = "Main"
+Main.Size = UDim2.new(0, 650, 0, 430)
+Main.Position = UDim2.new(0.5, -325, 0.5, -215)
+Main.BorderSizePixel = 0
+Main.Parent = Gui
+
+RegisterThemeObject("Main", Main, "BackgroundColor3")
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 10)
+MainCorner.Parent = Main
+
+--==================================================
+-- TOP BAR
+--==================================================
+
+local TopBar = Instance.new("Frame")
+TopBar.Name = "TopBar"
+TopBar.Size = UDim2.new(1, 0, 0, 50)
+TopBar.BorderSizePixel = 0
+TopBar.Parent = Main
+
+RegisterThemeObject("TopBar", TopBar, "BackgroundColor3")
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Name = "Title"
+TitleLabel.Size = UDim2.new(1, -110, 1, 0)
+TitleLabel.Position = UDim2.new(0, 18, 0, 0)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Text = Title
+TitleLabel.TextSize = 18
+TitleLabel.Font = Enum.Font.GothamBold
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+TitleLabel.Parent = TopBar
+
+RegisterThemeObject("Text", TitleLabel, "TextColor3")
+
+--==================================================
+-- MINIMIZE
+--==================================================
+
+local Minimize = Instance.new("TextButton")
+Minimize.Name = "Minimize"
+Minimize.Size = UDim2.new(0, 40, 0, 40)
+Minimize.Position = UDim2.new(1, -85, 0, 5)
+Minimize.BackgroundTransparency = 1
+Minimize.Text = "−"
+Minimize.TextSize = 25
+Minimize.Font = Enum.Font.GothamBold
+Minimize.Parent = TopBar
+
+RegisterThemeObject("Text", Minimize, "TextColor3")
+
+--==================================================
+-- CLOSE
+--==================================================
+
+local Close = Instance.new("TextButton")
+Close.Name = "Close"
+Close.Size = UDim2.new(0, 40, 0, 40)
+Close.Position = UDim2.new(1, -45, 0, 5)
+Close.BackgroundTransparency = 1
+Close.Text = "×"
+Close.TextSize = 28
+Close.Font = Enum.Font.GothamBold
+Close.Parent = TopBar
+
+RegisterThemeObject("Accent", Close, "TextColor3")
+
+--==================================================
+-- SIDEBAR
+--==================================================
+
+local Sidebar = Instance.new("Frame")
+Sidebar.Name = "Sidebar"
+Sidebar.Size = UDim2.new(0, 155, 1, -50)
+Sidebar.Position = UDim2.new(0, 0, 0, 50)
+Sidebar.BorderSizePixel = 0
+Sidebar.Parent = Main
+
+RegisterThemeObject("Sidebar", Sidebar, "BackgroundColor3")
+
+local TabLayout = Instance.new("UIListLayout")
+TabLayout.Padding = UDim.new(0, 6)
+TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+TabLayout.Parent = Sidebar
+
+local TabPadding = Instance.new("UIPadding")
+TabPadding.PaddingTop = UDim.new(0, 12)
+TabPadding.PaddingLeft = UDim.new(0, 10)
+TabPadding.PaddingRight = UDim.new(0, 10)
+TabPadding.Parent = Sidebar
+
+--==================================================
+-- CONTENT
+--==================================================
+
+local Content = Instance.new("Frame")
+Content.Name = "Content"
+Content.Size = UDim2.new(1, -155, 1, -50)
+Content.Position = UDim2.new(0, 155, 0, 50)
+Content.BorderSizePixel = 0
+Content.ClipsDescendants = true
+Content.Parent = Main
+
+RegisterThemeObject("Content", Content, "BackgroundColor3")
+
+--==================================================
+-- DRAGGING
+--==================================================
+
+local Dragging = false
+local DragStart
+local StartPosition
+
+TopBar.InputBegan:Connect(function(Input)
+
+	if Input.UserInputType == Enum.UserInputType.MouseButton1
+		or Input.UserInputType == Enum.UserInputType.Touch then
+
+		Dragging = true
+		DragStart = Input.Position
+		StartPosition = Main.Position
+
+		Input.Changed:Connect(function()
+
+			if Input.UserInputState == Enum.UserInputState.End then
+				Dragging = false
+			end
+
+		end)
+
+	end
+
+end)
+
+UserInputService.InputChanged:Connect(function(Input)
+
+	if Dragging and (
+		Input.UserInputType == Enum.UserInputType.MouseMovement
+			or Input.UserInputType == Enum.UserInputType.Touch
+		) then
+
+		local Delta = Input.Position - DragStart
+
+		Main.Position = UDim2.new(
+			StartPosition.X.Scale,
+			StartPosition.X.Offset + Delta.X,
+			StartPosition.Y.Scale,
+			StartPosition.Y.Offset + Delta.Y
+		)
+
+	end
+
+end)
+
+--==================================================
+-- MINIMIZE
+--==================================================
+
+local Minimized = false
+local NormalSize = Main.Size
+
+Minimize.MouseButton1Click:Connect(function()
+
+	Minimized = not Minimized
+
+	if Minimized then
+
+		Main.Size = UDim2.new(0, 650, 0, 50)
+
+		Sidebar.Visible = false
+		Content.Visible = false
+
+	else
+
+		Main.Size = NormalSize
+
+		Sidebar.Visible = true
+		Content.Visible = true
+
+	end
+
+end)
+
+--==================================================
+-- CLOSE
+--==================================================
+
+Close.MouseButton1Click:Connect(function()
+	Gui.Enabled = false
+end)
+
+--==================================================
+-- TAB SYSTEM
+--==================================================
+
+local Tabs = {}
+local CurrentTab
+
+local function SelectTab(Tab)
+
+	CurrentTab = Tab
+
+	for _, OtherTab in ipairs(Tabs) do
+
+		OtherTab.Container.Visible = false
+
+		OtherTab.Button.BackgroundColor3 =
+			Themes[CurrentTheme].Tab
+
+	end
+
+	Tab.Container.Visible = true
+
+	Tab.Button.BackgroundColor3 =
+		Themes[CurrentTheme].TabSelected
+
+end
+
+--==================================================
+-- CREATE TAB
+--==================================================
+
+local function CreateTab(TabName)
+
+	local Tab = {}
+
+	Tab.Name = TabName
+
+	-- TAB BUTTON
+	local TabButton = Instance.new("TextButton")
+
+	TabButton.Name = TabName
+	TabButton.Size = UDim2.new(1, 0, 0, 38)
+	TabButton.BorderSizePixel = 0
+	TabButton.Text = TabName
+	TabButton.TextSize = 13
+	TabButton.Font = Enum.Font.GothamMedium
+	TabButton.Parent = Sidebar
+
+	RegisterThemeObject("Tab", TabButton, "BackgroundColor3")
+	RegisterThemeObject("Text", TabButton, "TextColor3")
+
+	local TabCorner = Instance.new("UICorner")
+	TabCorner.CornerRadius = UDim.new(0, 6)
+	TabCorner.Parent = TabButton
+
+	Tab.Button = TabButton
+
+	-- TAB CONTENT
+	local Container = Instance.new("ScrollingFrame")
+
+	Container.Name = TabName .. "Content"
+	Container.Size = UDim2.new(1, 0, 1, 0)
+	Container.BackgroundTransparency = 1
+	Container.BorderSizePixel = 0
+	Container.ScrollBarThickness = 4
+	Container.CanvasSize = UDim2.new(0, 0, 0, 0)
+	Container.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	Container.Visible = false
+	Container.Parent = Content
+
+	local Padding = Instance.new("UIPadding")
+
+	Padding.PaddingTop = UDim.new(0, 15)
+	Padding.PaddingBottom = UDim.new(0, 15)
+	Padding.PaddingLeft = UDim.new(0, 15)
+	Padding.PaddingRight = UDim.new(0, 15)
+
+	Padding.Parent = Container
+
+	local Layout = Instance.new("UIListLayout")
+
+	Layout.Padding = UDim.new(0, 8)
+	Layout.SortOrder = Enum.SortOrder.LayoutOrder
+	Layout.Parent = Container
+
+	Tab.Container = Container
+
+	-- TAB CLICK
+	TabButton.MouseButton1Click:Connect(function()
+		SelectTab(Tab)
+	end)
+
+	--==================================================
+	-- BUTTON
+	--==================================================
+
+	function Tab:CreateButton(Data)
+
+		local Button = Instance.new("TextButton")
+
+		Button.Name = Data.Name or "Button"
+		Button.Size = UDim2.new(1, 0, 0, 42)
+		Button.BorderSizePixel = 0
+		Button.Text = Data.Name or "Button"
+		Button.TextSize = 14
+		Button.Font = Enum.Font.GothamMedium
+		Button.Parent = Container
+
+		RegisterThemeObject("Element", Button, "BackgroundColor3")
+		RegisterThemeObject("Text", Button, "TextColor3")
+
+		local Corner = Instance.new("UICorner")
+		Corner.CornerRadius = UDim.new(0, 7)
+		Corner.Parent = Button
+
+		Button.MouseButton1Click:Connect(function()
+
+			if Data.Callback then
+				Data.Callback()
+			end
+
+		end)
+
+		return Button
+	end
+
+	--==================================================
+	-- LABEL
+	--==================================================
+
+	function Tab:CreateLabel(Data)
+
+		local Label = Instance.new("TextLabel")
+
+		Label.Name = "Label"
+		Label.Size = UDim2.new(1, 0, 0, 35)
+		Label.BackgroundTransparency = 1
+		Label.Text = Data.Text or "Label"
+		Label.TextSize = 14
+		Label.Font = Enum.Font.Gotham
+		Label.TextXAlignment = Enum.TextXAlignment.Left
+		Label.Parent = Container
+
+		RegisterThemeObject("SubText", Label, "TextColor3")
+
+		return Label
+	end
+
+	--==================================================
+	-- TOGGLE
+	--==================================================
+
+	function Tab:CreateToggle(Data)
+
+		local Enabled = Data.CurrentValue or false
+
+		local Holder = Instance.new("Frame")
+
+		Holder.Name = "Toggle"
+		Holder.Size = UDim2.new(1, 0, 0, 48)
+		Holder.BorderSizePixel = 0
+		Holder.Parent = Container
+
+		RegisterThemeObject("Element", Holder, "BackgroundColor3")
+
+		local Corner = Instance.new("UICorner")
+		Corner.CornerRadius = UDim.new(0, 7)
+		Corner.Parent = Holder
+
+		local Label = Instance.new("TextLabel")
+
+		Label.Size = UDim2.new(1, -70, 1, 0)
+		Label.Position = UDim2.new(0, 12, 0, 0)
+		Label.BackgroundTransparency = 1
+		Label.Text = Data.Name or "Toggle"
+		Label.TextSize = 14
+		Label.Font = Enum.Font.GothamMedium
+		Label.TextXAlignment = Enum.TextXAlignment.Left
+		Label.Parent = Holder
+
+		RegisterThemeObject("Text", Label, "TextColor3")
+
+		local ToggleButton = Instance.new("TextButton")
+
+		ToggleButton.Size = UDim2.new(0, 45, 0, 24)
+		ToggleButton.Position = UDim2.new(1, -57, 0.5, -12)
+		ToggleButton.Text = ""
+		ToggleButton.BorderSizePixel = 0
+		ToggleButton.Parent = Holder
+
+		local ToggleCorner = Instance.new("UICorner")
+		ToggleCorner.CornerRadius = UDim.new(1, 0)
+		ToggleCorner.Parent = ToggleButton
+
+		local function Update()
+
+			if Enabled then
+				ToggleButton.BackgroundColor3 =
+					Themes[CurrentTheme].Accent
+			else
+				ToggleButton.BackgroundColor3 =
+					Color3.fromRGB(90, 90, 90)
+			end
+
+			if Data.Callback then
+				Data.Callback(Enabled)
+			end
+
+		end
+
+		ToggleButton.MouseButton1Click:Connect(function()
+
+			Enabled = not Enabled
+
+			Update()
+
+		end)
+
+		Update()
+
+		return Holder
+	end
+
+	--==================================================
+	-- SLIDER
+	--==================================================
+
+	function Tab:CreateSlider(Data)
+
+		local Minimum = Data.Range and Data.Range[1] or 0
+		local Maximum = Data.Range and Data.Range[2] or 100
+		local Increment = Data.Increment or 1
+		local Value = Data.CurrentValue or Minimum
+
+		local Holder = Instance.new("Frame")
+
+		Holder.Name = "Slider"
+		Holder.Size = UDim2.new(1, 0, 0, 65)
+		Holder.BorderSizePixel = 0
+		Holder.Parent = Container
+
+		RegisterThemeObject("Element", Holder, "BackgroundColor3")
+
+		local Corner = Instance.new("UICorner")
+		Corner.CornerRadius = UDim.new(0, 7)
+		Corner.Parent = Holder
+
+		local Label = Instance.new("TextLabel")
+
+		Label.Size = UDim2.new(1, -70, 0, 28)
+		Label.Position = UDim2.new(0, 12, 0, 3)
+		Label.BackgroundTransparency = 1
+		Label.Text = Data.Name or "Slider"
+		Label.TextSize = 14
+		Label.Font = Enum.Font.GothamMedium
+		Label.TextXAlignment = Enum.TextXAlignment.Left
+		Label.Parent = Holder
+
+		RegisterThemeObject("Text", Label, "TextColor3")
+
+		local ValueLabel = Instance.new("TextLabel")
+
+		ValueLabel.Size = UDim2.new(0, 50, 0, 28)
+		ValueLabel.Position = UDim2.new(1, -60, 0, 3)
+		ValueLabel.BackgroundTransparency = 1
+		ValueLabel.Text = tostring(Value)
+		ValueLabel.TextSize = 13
+		ValueLabel.Font = Enum.Font.Gotham
+		ValueLabel.Parent = Holder
+
+		RegisterThemeObject("SubText", ValueLabel, "TextColor3")
+
+		local Bar = Instance.new("TextButton")
+
+		Bar.Size = UDim2.new(1, -24, 0, 6)
+		Bar.Position = UDim2.new(0, 12, 1, -18)
+		Bar.BorderSizePixel = 0
+		Bar.Text = ""
+		Bar.Parent = Holder
+
+		RegisterThemeObject("Tab", Bar, "BackgroundColor3")
+
+		local BarCorner = Instance.new("UICorner")
+		BarCorner.CornerRadius = UDim.new(1, 0)
+		BarCorner.Parent = Bar
+
+		local Fill = Instance.new("Frame")
+
+		Fill.Size = UDim2.new(
+			(Value - Minimum) / (Maximum - Minimum),
+			0,
+			1,
+			0
+		)
+
+		Fill.BorderSizePixel = 0
+		Fill.Parent = Bar
+
+		RegisterThemeObject("Accent", Fill, "BackgroundColor3")
+
+		local FillCorner = Instance.new("UICorner")
+		FillCorner.CornerRadius = UDim.new(1, 0)
+		FillCorner.Parent = Fill
+
+		local SliderDragging = false
+
+		local function SetValue(X)
+
+			local Percent = math.clamp(
+				(X - Bar.AbsolutePosition.X) /
+					Bar.AbsoluteSize.X,
+				0,
+				1
+			)
+
+			local NewValue =
+				Minimum + ((Maximum - Minimum) * Percent)
+
+			NewValue =
+				math.floor(
+					(NewValue - Minimum) / Increment + 0.5
+				) * Increment + Minimum
+
+			NewValue = math.clamp(
+				NewValue,
+				Minimum,
+				Maximum
+			)
+
+			Value = NewValue
+
+			local NewPercent =
+				(Value - Minimum) /
+				(Maximum - Minimum)
+
+			Fill.Size =
+				UDim2.new(NewPercent, 0, 1, 0)
+
+			ValueLabel.Text = tostring(Value)
+
+			if Data.Callback then
+				Data.Callback(Value)
+			end
+
+		end
+
+		Bar.MouseButton1Down:Connect(function(X)
+
+			SliderDragging = true
+
+			SetValue(X)
+
+		end)
+
+		UserInputService.InputChanged:Connect(function(Input)
+
+			if SliderDragging
+				and Input.UserInputType ==
+				Enum.UserInputType.MouseMovement then
+
+				SetValue(Input.Position.X)
+
+			end
+
+		end)
+
+		UserInputService.InputEnded:Connect(function(Input)
+
+			if Input.UserInputType ==
+				Enum.UserInputType.MouseButton1 then
+
+				SliderDragging = false
+
+			end
+
+		end)
+
+		return Holder
+	end
+
+	table.insert(Tabs, Tab)
+
+	return Tab
+end
+
+--==================================================
+-- WINDOW API
+--==================================================
+
+local Window = {}
+
+function Window:CreateTab(Data)
+	return CreateTab(Data.Name or "Tab")
+end
+
+--==================================================
+-- HOME TAB
+--==================================================
+
+local Home = Window:CreateTab({
+	Name = "Home"
+})
+
+Home:CreateLabel({
+	Text = "Welcome to " .. Title
+})
+
+Home:CreateButton({
+	Name = "Test Button",
+
+	Callback = function()
+		print("Button clicked!")
+	end
+})
+
+Home:CreateToggle({
+	Name = "Toggle",
+
+	CurrentValue = false,
+
+	Callback = function(Value)
+		print("Toggle:", Value)
+	end
+})
+
+Home:CreateSlider({
+	Name = "Slider",
+
+	Range = {0, 100},
+
+	Increment = 1,
+
+	CurrentValue = 50,
+
+	Callback = function(Value)
+		print("Slider:", Value)
+	end
+})
+
+--==================================================
+-- SETTINGS TAB
+--==================================================
+
+local Settings = Window:CreateTab({
+	Name = "Settings"
+})
+
+Settings:CreateLabel({
+	Text = "Appearance"
+})
+
+Settings:CreateButton({
+	Name = "Black and White",
+
+	Callback = function()
+		SetTheme("Black and White")
+	end
+})
+
+Settings:CreateButton({
+	Name = "Black and Red",
+
+	Callback = function()
+		SetTheme("Black and Red")
+	end
+})
+
+Settings:CreateButton({
+	Name = "White and Black",
+
+	Callback = function()
+		SetTheme("White and Black")
+	end
+})
+
+Settings:CreateButton({
+	Name = "Pink and White",
+
+	Callback = function()
+		SetTheme("Pink and White")
+	end
+})
+--==================================================
+-- START
+--==================================================
+
+SelectTab(Home)
+
+SetTheme(CurrentTheme)
+
+print("Hub loaded successfully:", Title)
