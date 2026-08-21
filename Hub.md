@@ -11,7 +11,7 @@ local Window = Hub:CreateWindow({
 Create a Label - Display text/information.
 ```lua
 Tab:CreateLabel({
-    Text = ""
+    Text = "Label"
 })
 ```
 
