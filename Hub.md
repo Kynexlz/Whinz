@@ -1,7 +1,7 @@
 # Whinz Hub
 
 ```lua
-local Hub = loadstring(game:HttpGet("YOUR_RAW_GITHUB_URL"))()
+local Hub = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kynexlz/Whinz/refs/heads/main/Whinz"))()
 
 local Window = Hub:CreateWindow({
     Title = "My Hub"
