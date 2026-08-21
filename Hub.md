@@ -8,6 +8,20 @@ local Window = Hub:CreateWindow({
 })
 ```
 
+Create a Tab
+```lua
+local MainTab = Window:CreateTab({
+    Name = "Main"
+})
+```
+
+Create a Section
+```lua
+local Section = MainTab:CreateSection({
+    Name = "Example"
+})
+```
+
 Create a Label - Display text/information.
 ```lua
 Tab:CreateLabel({
